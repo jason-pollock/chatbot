@@ -17,7 +17,7 @@ class ChatApi
         });
     }
 
-    private function initializeChat(\WP_REST_Request $request): \WP_REST_Response
+    public function initializeChat(\WP_REST_Request $request): \WP_REST_Response
     {
         // Initialize chat with article content
         $articleContent = $request->get_param('articleContent');
@@ -29,7 +29,7 @@ class ChatApi
         return new \WP_REST_Response('Chat initialized with context.', 200);
     }
 
-    private function handleMessage(\WP_REST_Request $request): \WP_REST_Response
+    public function handleMessage(\WP_REST_Request $request): \WP_REST_Response
     {
         $input = $request->get_param('message');
         $context = $this->retrieveChatContext(); // Retrieve the context you stored earlier
