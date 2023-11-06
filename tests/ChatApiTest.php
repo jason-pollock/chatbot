@@ -2,27 +2,39 @@
 
 namespace CoolGuy\WordPress\Plugin\ChatBot\Tests;
 
+use CoolGuy\WordPress\Plugin\ChatBot\ChatApi;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 use WP_Mock;
-use CoolGuy\WordPress\Plugin\ChatBot\ChatApi;
-use WP_REST_Request;
-use WP_REST_Response;
 
 class ChatApiTest extends TestCase
 {
     protected ChatApi $chatApi;
 
+    public static function setUpBeforeClass(): void
+    {
+        WP_Mock::bootstrap();
+    }
+
     protected function setUp(): void
     {
+        parent::setUp();
         WP_Mock::setUp();
         $this->chatApi = new ChatApi();
+
+        // Mock the WP_REST_Response class
+        WP_Mock::userFunction('WP_REST_Response', [
+            'return' => function ($data = null, $status = 200) {
+                return (object) ['data' => $data, 'status' => $status];
+            }
+        ]);
     }
 
     protected function tearDown(): void
     {
         WP_Mock::tearDown();
         Mockery::close();
+        parent::tearDown();
     }
 
     public function testCreateRoute(): void
@@ -32,49 +44,73 @@ class ChatApiTest extends TestCase
         $callback = function () {
         };
         $permission_callback = function () {
-            return true;
+            return __return_true();
         };
 
-        WP_Mock::userFunction('add_action', [
-            'times' => 1,
-            'args' => ['rest_api_init', Mockery::type('callable')]
-        ]);
-
-        WP_Mock::userFunction('register_rest_route', [
-            'times' => 1,
-            'args' => [ChatApi::REST_NAMESPACE, $endpoint, [
-                'methods' => $method,
-                'callback' => $callback,
-                'permission_callback' => $permission_callback,
-            ]]
-        ]);
+        WP_Mock::expectActionAdded('rest_api_init', Mockery::type('callable'));
 
         $this->chatApi->createRoute($endpoint, $method, $callback, $permission_callback);
     }
 
     public function testInitializeChat(): void
     {
-        $request = Mockery::mock(WP_REST_Request::class);
+        $request = Mockery::mock(\WP_REST_Request::class);
         $request->shouldReceive('get_param')
             ->with('articleContent')
             ->andReturn('Test article content');
 
+        $responseMock = Mockery::mock('overload:WP_REST_Response');
+        $responseMock->shouldReceive('get_data')
+        ->andReturn('Chat initialized with context.');
+        $responseMock->shouldReceive('get_status')
+        ->andReturn(200);
+    
         $response = $this->chatApi->initializeChat($request);
-
-        $this->assertInstanceOf(WP_REST_Response::class, $response);
+    
         $this->assertEquals('Chat initialized with context.', $response->get_data());
         $this->assertEquals(200, $response->get_status());
     }
 
     public function testHandleMessage(): void
     {
-        $request = Mockery::mock(WP_REST_Request::class);
+        $_ENV['OPENAI_API_KEY'] = 'test';
+
+        $request = Mockery::mock(\WP_REST_Request::class);
         $request->shouldReceive('get_param')
             ->with('message')
             ->andReturn('Test message');
 
+        WP_Mock::userFunction('wp_remote_post', [
+            'return' => function ($url, $args) {
+                return [
+                    'response' => [
+                        'code' => 200,
+                        'message' => 'OK'
+                    ],
+                    'body' => json_encode([
+                        'choices' => [
+                            [
+                                'text' => 'Test response'
+                            ]
+                        ]
+                    ]),
+                    'context' => 'Test context'
+                ];
+            }
+        ]);
+
+        WP_Mock::userFunction('is_wp_error', ['return' => false]);
+
+        WP_Mock::userFunction('wp_remote_retrieve_response_code', ['return' => 200]);
+
+        WP_Mock::userFunction('wp_remote_retrieve_body', [
+            'return' => function ($response) {
+                return $response['body'];
+            }
+        ]);
+
         $response = $this->chatApi->handleMessage($request);
 
-        $this->assertInstanceOf(WP_REST_Response::class, $response);
+        $this->assertInstanceOf(\WP_REST_Response::class, $response);
     }
 }

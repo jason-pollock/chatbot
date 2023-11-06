@@ -6,6 +6,10 @@ class ChatApi
 {
     public const REST_NAMESPACE = 'chatbot/v1';
 
+    // public function __construct(private string $articleContent) {
+    //     $this->articleContent = $articleContent;
+    // }
+
     public function createRoute(string $endpoint, string $method, callable $callback, callable $permission_callback): void
     {
         add_action('rest_api_init', function () use ($endpoint, $method, $callback, $permission_callback) {
@@ -76,7 +80,7 @@ class ChatApi
     private function callOpenaiApi(string $prompt): array
     {
         $apiKey = $_ENV['OPENAI_API_KEY'];
-        $apiUrl = 'https://api.openai.com/v1/completions'; // Base URL for OpenAI API
+        $apiUrl = 'https://api.openai.com/v1/completions';
         $headers = [
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',

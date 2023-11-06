@@ -13,6 +13,11 @@
       "CoolGuy\\WordPress\\Plugin\\ChatBot\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "CoolGuy\\WordPress\\Plugin\\ChatBot\\Tests\\": "tests/"
+    }
+  },
   "require-dev": {
     "roave/security-advisories": "dev-latest",
     "rector/rector": "^0.14.6",
@@ -33,11 +38,13 @@
     "wp-hooks/wordpress-core": "^1.2",
     "friendsofphp/php-cs-fixer": "^3.12",
     "vimeo/psalm": "^4.29",
-    "phpstan/phpstan": "^1.8"
+    "phpstan/phpstan": "^1.8",
+    "10up/wp_mock": "^1.0"
   },
   "require": {
     "johnpbloch/wordpress": "^6.0",
-    "vlucas/phpdotenv": "^5.5"
+    "vlucas/phpdotenv": "^5.5",
+    "phpunit/phpunit": "*"
   },
   "config": {
     "allow-plugins": {
@@ -46,10 +53,13 @@
     }
   },
   "scripts": {
-    "phpcs": "phpcs --standard=phpcs.xml",
-    "phpmd": "phpmd phpmd.xml",
-    "phpstan": "vendor/bin/phpstan -c phpstan.neon",
-    "psalm": "vendor/bin/psalm --config=psalm.xml",
-    "rector": "vendor/bin/rector process --config rector.php --dry-run -vvv"
+    "phpcs": "./vendor/bin/phpcs --standard=phpcs.xml",
+    "phpcbf": "./vendor/bin/phpcbf --no-colors",
+    "phpmd": "./vendor/bing/phpmd phpmd.xml",
+    "phpstan": "./vendor/bin/phpstan -c phpstan.neon",
+    "psalm": "./vendor/bin/psalm --config=psalm.xml",
+    "phpunit": "./vendor/bin/phpunit",
+    "test": "./vendor/bin/phpunit",
+    "rector": "./vendor/bin/rector process --config rector.php --dry-run -vvv"
   }
 }
