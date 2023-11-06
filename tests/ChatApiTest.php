@@ -22,7 +22,6 @@ class ChatApiTest extends TestCase
         WP_Mock::setUp();
         $this->chatApi = new ChatApi();
 
-        // Mock the WP_REST_Response class
         WP_Mock::userFunction('WP_REST_Response', [
             'return' => function ($data = null, $status = 200) {
                 return (object) ['data' => $data, 'status' => $status];

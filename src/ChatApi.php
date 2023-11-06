@@ -6,10 +6,6 @@ class ChatApi
 {
     public const REST_NAMESPACE = 'chatbot/v1';
 
-    // public function __construct(private string $articleContent) {
-    //     $this->articleContent = $articleContent;
-    // }
-
     public function createRoute(string $endpoint, string $method, callable $callback, callable $permission_callback): void
     {
         add_action('rest_api_init', function () use ($endpoint, $method, $callback, $permission_callback) {
@@ -23,11 +19,8 @@ class ChatApi
 
     public function initializeChat(\WP_REST_Request $request): \WP_REST_Response
     {
-        // Initialize chat with article content
         $articleContent = $request->get_param('articleContent');
-        // Process the article content to fit within the token limits
         $context = $this->summarizeArticleContent($articleContent);
-        // Store the context in the session or database associated with the user/session ID
         $this->storeChatContext($context);
 
         return new \WP_REST_Response('Chat initialized with context.', 200);
@@ -36,7 +29,7 @@ class ChatApi
     public function handleMessage(\WP_REST_Request $request): \WP_REST_Response
     {
         $input = $request->get_param('message');
-        $context = $this->retrieveChatContext(); // Retrieve the context you stored earlier
+        $context = $this->retrieveChatContext();
         $chatExchange = [$context, $input];
 
         return $this->handleBotResponse($chatExchange);
@@ -80,32 +73,32 @@ class ChatApi
     private function callOpenaiApi(string $prompt): array
     {
         $apiKey = $_ENV['OPENAI_API_KEY'];
+
         $apiUrl = 'https://api.openai.com/v1/completions';
+
         $headers = [
             'Authorization' => 'Bearer ' . $apiKey,
             'Content-Type' => 'application/json',
         ];
+
         $body = [
             'model' => 'text-davinci-003',
             'prompt' => $prompt,
             'max_tokens' => 150,
-//            'prompt' => $prompt,
-//            'max_tokens' => 150,
-//            'temperature' => 0.9,
-//            'top_p' => 1,
-//            'frequency_penalty' => 0.0,
-//            'presence_penalty' => 0.6,
-//            'stop' => ['\n\n'],
         ];
+
         $response = wp_remote_post($apiUrl, [
             'method' => 'POST',
             'headers' => $headers,
             'body' => json_encode($body),
         ]);
+
         if (is_wp_error($response)) {
             throw new \RuntimeException($response->get_error_message());
         }
+
         $responseCode = wp_remote_retrieve_response_code($response);
+
         if ($responseCode !== 200) {
             $responseMessage = wp_remote_retrieve_response_message($response);
             throw new \RuntimeException("OpenAI API error: {$responseMessage} ({$responseCode})");
@@ -116,15 +109,12 @@ class ChatApi
 
     private function updateChatContext(string $context, string $userMessage, string $botResponse): void
     {
-        // Append the new exchange to the existing context
         $updatedContext = $context . "\nUser: " . $userMessage . "\nBot: " . $botResponse;
-        // Store the updated context back into the session
         $this->storeChatContext($updatedContext);
     }
 
     private function retrieveChatContext(): string
     {
-        // Retrieve the context you stored earlier
         if (!session_id()) {
             session_start();
         }
@@ -134,11 +124,10 @@ class ChatApi
 
     private function storeChatContext(string $context): void
     {
-        // For simplicity, we'll store this in the session
-        // Make sure to start the session in your main plugin file or init hook
         if (!session_id()) {
             session_start();
         }
+
         $_SESSION['chat_context'] = $context;
     }
 
