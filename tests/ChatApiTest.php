@@ -24,8 +24,8 @@ class ChatApiTest extends TestCase
 
         WP_Mock::userFunction('WP_REST_Response', [
             'return' => function ($data = null, $status = 200) {
-                return (object) ['data' => $data, 'status' => $status];
-            }
+                return (object)['data' => $data, 'status' => $status];
+            },
         ]);
     }
 
@@ -60,12 +60,12 @@ class ChatApiTest extends TestCase
 
         $responseMock = Mockery::mock('overload:WP_REST_Response');
         $responseMock->shouldReceive('get_data')
-        ->andReturn('Chat initialized with context.');
+            ->andReturn('Chat initialized with context.');
         $responseMock->shouldReceive('get_status')
-        ->andReturn(200);
-    
+            ->andReturn(200);
+
         $response = $this->chatApi->initializeChat($request);
-    
+
         $this->assertEquals('Chat initialized with context.', $response->get_data());
         $this->assertEquals(200, $response->get_status());
     }
@@ -84,18 +84,18 @@ class ChatApiTest extends TestCase
                 return [
                     'response' => [
                         'code' => 200,
-                        'message' => 'OK'
+                        'message' => 'OK',
                     ],
                     'body' => json_encode([
                         'choices' => [
                             [
-                                'text' => 'Test response'
-                            ]
-                        ]
+                                'text' => 'Test response',
+                            ],
+                        ],
                     ]),
-                    'context' => 'Test context'
+                    'context' => 'Test context',
                 ];
-            }
+            },
         ]);
 
         WP_Mock::userFunction('is_wp_error', ['return' => false]);
@@ -105,7 +105,7 @@ class ChatApiTest extends TestCase
         WP_Mock::userFunction('wp_remote_retrieve_body', [
             'return' => function ($response) {
                 return $response['body'];
-            }
+            },
         ]);
 
         $response = $this->chatApi->handleMessage($request);
