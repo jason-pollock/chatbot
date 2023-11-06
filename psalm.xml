@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="6"
+    phpVersion="8.2"
+    resolveFromConfigFile="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <stubs>
+        <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"/>
+        <file name="vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php"/>
+        <file name="vendor/php-stubs/wordpress-globals/wordpress-globals.php"/>
+        <file name="vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php"/>
+        <file name="vendor/php-stubs/wordpress-seo-stubs/wordpress-seo-stubs.php"/>
+    </stubs>
+    <projectFiles>
+        <directory name="packages"/>
+        <!-- <file name="init.php" /> -->
+        <!-- See https://psalm.dev/docs/running_psalm/configuration/#projectfiles -->
+        <ignoreFiles allowMissingFiles="true">
+            <directory name="vendor"/>
+            <directory name="wordpress"/>
+            <directory name="scoped-build"/>
+        </ignoreFiles>
+    </projectFiles>
+    <plugins>
+        <pluginClass class="PsalmWordPress\Plugin"/>
+    </plugins>
+</psalm>
+

@@ -1,0 +1,22 @@
+parameters:
+    level: 3
+    ignoreErrors:
+        - '#Constant [A-Z_]+ not found#'
+        - '#PHPDoc .* invalid value#'
+        - '#tags .* invalid syntax#'
+        - '#Access to an undefined property .*(symbol|exchange|company_name)#'
+    paths:
+        - init.php
+        - src/
+        - tests/
+    excludePaths:
+        - */node_modules/*
+    bootstrapFiles:
+        - lib/constants.php
+    scanFiles:
+        - vendor/php-stubs/acf-pro-stubs/acf-pro-stubs.php
+        - vendor/php-stubs/wp-cli-stubs/wp-cli-stubs.php
+        - vendor/php-stubs/wp-cli-stubs/wp-cli-i18n-stubs.php
+        - vendor/php-stubs/wp-cli-stubs/wp-cli-commands-stubs.php
+        - vendor/php-stubs/wordpress-seo-stubs/wordpress-seo-stubs.php
+
