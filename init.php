@@ -11,11 +11,13 @@
  * Text Domain: chatbot-plugin
  */
 
-use CoolGuy\WordPress\Plugin\ChatBot\ChatApi;
-
 if (!defined('ABSPATH')) {
     exit;
 }
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use CoolGuy\WordPress\Plugin\ChatBot\ChatApi;
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();

@@ -39,12 +39,12 @@
     "friendsofphp/php-cs-fixer": "^3.12",
     "vimeo/psalm": "^4.29",
     "phpstan/phpstan": "^1.8",
-    "10up/wp_mock": "^1.0"
+    "10up/wp_mock": "^1.0",
+    "phpunit/phpunit": "*"
   },
   "require": {
     "johnpbloch/wordpress": "^6.0",
-    "vlucas/phpdotenv": "^5.5",
-    "phpunit/phpunit": "*"
+    "vlucas/phpdotenv": "^5.5"
   },
   "config": {
     "allow-plugins": {
@@ -59,7 +59,6 @@
     "phpstan": "./vendor/bin/phpstan -c phpstan.neon",
     "psalm": "./vendor/bin/psalm --config=psalm.xml",
     "phpunit": "./vendor/bin/phpunit",
-    "test": "./vendor/bin/phpunit",
     "rector": "./vendor/bin/rector process --config rector.php --dry-run -vvv"
   }
 }
